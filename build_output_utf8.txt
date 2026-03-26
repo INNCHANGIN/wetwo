@@ -1,0 +1,54 @@
+﻿
+> we-two@0.1.0 build
+> next build
+
+  ??Next.js 14.2.3
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+> [PWA] Compile server
+> [PWA] Compile server
+> [PWA] Compile client (static)
+> [PWA] Auto register service worker with: C:\Users\LENOVO\module\we-two\node_modules\next-pwa\register.js
+> [PWA] Service worker: C:\Users\LENOVO\module\we-two\public\sw.js
+> [PWA]   url: /sw.js
+> [PWA]   scope: /
+ ??Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/16) ...
+   Generating static pages (4/16) 
+   Generating static pages (8/16) 
+   Generating static pages (12/16) 
+ ??Generating static pages (16/16)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+????/                                    172 B            94 kB
+????/_not-found                          871 B          87.9 kB
+????/calendar                            2.96 kB         164 kB
+????/calendar/new                        2.98 kB         148 kB
+????/connect                             2.56 kB         147 kB
+??? /diary                               2.57 kB         163 kB
+??? /diary/[id]                          3 kB            157 kB
+????/diary/new                           3.21 kB         148 kB
+??? /home                                2.62 kB         168 kB
+????/login                               1.73 kB         153 kB
+??? /mypage                              3.63 kB         163 kB
+??? /photos                              1.49 kB         167 kB
+??? /photos/[id]                         2.53 kB         162 kB
+????/photos/upload                       3.31 kB         148 kB
+????/settings                            4.99 kB         155 kB
+????/signup                              1.56 kB         146 kB
++ First Load JS shared by all            87 kB
+  ??chunks/23-a79fd1c5feac0004.js        31.5 kB
+  ??chunks/fd9d1056-04c80b1463f44bb3.js  53.6 kB
+  ??other shared chunks (total)          1.95 kB
+
+
+? Middleware                             77.2 kB
+
+?? (Static)   prerendered as static content
+?  (Dynamic)  server-rendered on demand
+
