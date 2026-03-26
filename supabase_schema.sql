@@ -72,17 +72,16 @@ CREATE POLICY "Users can update own profile"
 ON public.users FOR UPDATE USING ( auth.uid() = id );
 
 -- 2. Couples RLS: 자신이 속한 커플 데이터만 접근 가능
-CREATE POLICY "Users can view their own couple"
-ON public.couples FOR SELECT
-USING ( auth.uid() = user1_id OR auth.uid() = user2_id );
+CREATE POLICY "couples_read_by_code" ON public.couples
+  FOR SELECT USING (true); -- 코드 확인을 위해 누구나 조회 가능 (단, user2_id가 null인 경우 위주로 필터링해서 사용 권장)
 
 CREATE POLICY "Users can insert their couple"
 ON public.couples FOR INSERT
 WITH CHECK ( auth.uid() = user1_id OR auth.uid() = user2_id );
 
-CREATE POLICY "Users can update their couple"
-ON public.couples FOR UPDATE
-USING ( auth.uid() = user1_id OR auth.uid() = user2_id );
+CREATE POLICY "couples_update_user2" ON public.couples
+  FOR UPDATE USING (user2_id IS NULL)
+  WITH CHECK (user2_id = auth.uid());
 
 -- 3. Events RLS
 CREATE POLICY "Users can manage events of their couple"
