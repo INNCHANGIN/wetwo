@@ -36,7 +36,7 @@ export default function PhotosContent({ initialPhotos, initialCount, coupleId }:
 
       <div className="grid grid-cols-3 gap-[2px] pb-[90px]">
         {photos?.map((photo) => (
-          <Link key={photo.id} href={`/photos/${photo.id}`} className="aspect-square bg-surface overflow-hidden relative cursor-pointer group active:opacity-80 transition-opacity">
+          <Link key={photo.id} href={`/photos/detail?id=${photo.id}`} className="aspect-square bg-surface overflow-hidden relative cursor-pointer group active:opacity-80 transition-opacity">
             <Image 
                src={photo.storage_path} 
                alt={photo.caption || "사진"} 

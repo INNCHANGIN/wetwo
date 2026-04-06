@@ -1,22 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { ArrowLeft, Heart } from "lucide-react";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 
-export default function PhotoDetailPage({ params }: { params: { id: string } }) {
+export default function PhotoDetailPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const supabase = createClient();
   const [liked, setLiked] = useState(false);
 
   // 1. 해당 사진 데이터 + 업로더 정보 가져오기
   const { data: photoData } = useQuery({
-    queryKey: ["photo", params.id],
+    queryKey: ["photo", id],
     queryFn: async () => {
-      const { data: photo } = await supabase.from("photos").select("*").eq("id", params.id).single();
+      if (!id) return null;
+      const { data: photo } = await supabase.from("photos").select("*").eq("id", id).single();
       if (!photo) return null;
 
       const { data: uploader } = await supabase.from("users").select("nickname, avatar_url").eq("id", photo.uploaded_by).single();
@@ -41,7 +44,7 @@ export default function PhotoDetailPage({ params }: { params: { id: string } }) 
   const photo = photoData?.photo;
   const uploader = photoData?.uploader;
 
-  const currentIndex = photosList.indexOf(params.id);
+  const currentIndex = photosList.indexOf(id);
   
   // 가벼운 스와이프 핸들러
   let touchStartX = 0;
@@ -53,10 +56,10 @@ export default function PhotoDetailPage({ params }: { params: { id: string } }) 
     // 임계값 50px 좌우 드래그 판단
     if (diff > 50 && currentIndex < photosList.length - 1) {
       // 왼쪽 스와이프: 다음(오래된) 사진
-      router.push(`/photos/${photosList[currentIndex + 1]}`);
+      router.push(`/photos/detail?id=${photosList[currentIndex + 1]}`);
     } else if (diff < -50 && currentIndex > 0) {
       // 오른쪽 스와이프: 이전(새로운) 사진
-      router.push(`/photos/${photosList[currentIndex - 1]}`);
+      router.push(`/photos/detail?id=${photosList[currentIndex - 1]}`);
     }
   };
 

@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { ArrowLeft, Trash2, Edit2, Lock } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Diary } from "@/lib/types";
 
-export default function DiaryDetailPage({ params }: { params: { id: string } }) {
+export default function DiaryDetailPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const supabase = createClient();
   const queryClient = useQueryClient();
   
@@ -21,9 +23,9 @@ export default function DiaryDetailPage({ params }: { params: { id: string } }) 
   }, [supabase]);
 
   const { data: diaryData, isLoading } = useQuery({
-    queryKey: ["diary", params.id],
+    queryKey: ["diary", id],
     queryFn: async () => {
-      const { data: diary } = await supabase.from("diaries").select("*").eq("id", params.id).single();
+      const { data: diary } = await supabase.from("diaries").select("*").eq("id", id).single();
       if (!diary) return null;
 
       const { data: author } = await supabase.from("users").select("nickname").eq("id", diary.author_id).single();
@@ -39,9 +41,9 @@ export default function DiaryDetailPage({ params }: { params: { id: string } }) 
 
   useEffect(() => {
     const channel = supabase
-      .channel(`diary-${params.id}`)
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'diaries', filter: `id=eq.${params.id}` }, (payload) => {
-        queryClient.setQueryData(["diary", params.id], (oldData: any) => {
+      .channel(`diary-${id}`)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'diaries', filter: `id=eq.${id}` }, (payload) => {
+        queryClient.setQueryData(["diary", id], (oldData: any) => {
           if (!oldData) return oldData;
           return { ...oldData, diary: payload.new };
         });
@@ -49,11 +51,11 @@ export default function DiaryDetailPage({ params }: { params: { id: string } }) 
       .subscribe();
       
     return () => { supabase.removeChannel(channel) };
-  }, [params.id, supabase, queryClient]);
+  }, [id, supabase, queryClient]);
 
   const handleDelete = async () => {
     if (confirm("정말 이 일기를 삭제할까요?")) {
-      await supabase.from("diaries").delete().eq("id", params.id);
+      await supabase.from("diaries").delete().eq("id", id);
       router.push("/diary");
     }
   };
@@ -71,7 +73,7 @@ export default function DiaryDetailPage({ params }: { params: { id: string } }) 
     }
 
     // setReactions removed - relying on queryClient
-    await supabase.from("diaries").update({ reactions: newReactions }).eq("id", params.id);
+    await supabase.from("diaries").update({ reactions: newReactions }).eq("id", id);
   };
 
   if (isLoading) return <div className="min-h-screen bg-white" />;

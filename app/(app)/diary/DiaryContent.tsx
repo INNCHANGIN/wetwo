@@ -101,7 +101,7 @@ export default function DiaryContent({ initialDiaries, coupleId, myId }: { initi
                   return (
                     <div key={diary.id} className={`flex w-full ${isMine ? 'justify-end' : 'justify-start'}`}>
                       <Link 
-                        href={`/diary/${diary.id}`} 
+                        href={`/diary/detail?id=${diary.id}`} 
                         className={`max-w-[80%] p-4 rounded-[20px] shadow-sm active:scale-[0.98] transition-transform
                           ${isMine 
                             ? 'bg-primary text-white rounded-tr-sm border border-black/5' 
