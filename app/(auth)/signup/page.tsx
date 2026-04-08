@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
+import { ChevronLeft } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -32,7 +33,13 @@ export default function SignupPage() {
     });
 
     if (authError || !authData.user) {
-      setError(authError?.message || "회원가입에 실패했습니다.");
+      const errorMap: Record<string, string> = {
+        'Password should be at least 6 characters': '비밀번호는 6자 이상이어야 해요.',
+        'User already registered': '이미 사용 중인 이메일이에요.',
+        'Invalid email': '이메일 형식이 올바르지 않아요.',
+      };
+      const msg = errorMap[authError?.message || ""] ?? '회원가입에 실패했어요. 다시 시도해주세요.';
+      setError(msg);
       setLoading(false);
       return;
     }
@@ -58,6 +65,9 @@ export default function SignupPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <div className="flex-1 pt-[60px] px-6">
+        <button type="button" onClick={() => router.back()} className="flex items-center gap-1 text-muted mb-6 active:opacity-70 transition-opacity">
+          <ChevronLeft className="w-6 h-6" />
+        </button>
         <h1 className="text-[28px] leading-tight font-bold text-text mb-2">반가워요! 👋</h1>
         <p className="text-base text-muted mb-10">간단한 정보만 입력하면 끝나요</p>
 
@@ -88,6 +98,9 @@ export default function SignupPage() {
               className="w-full h-[56px] px-4 bg-surface text-text rounded-xl focus:outline-none placeholder:text-muted/60 text-[17px]" 
               placeholder="비밀번호" 
             />
+            {password.length > 0 && password.length < 6 && (
+              <p className="text-[13px] text-muted mt-1">비밀번호는 6자 이상이어야 해요</p>
+            )}
           </div>
           {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
 
@@ -95,7 +108,7 @@ export default function SignupPage() {
 
           <button 
             type="submit"
-            disabled={loading || !nickname || !email || !password}
+            disabled={loading || !nickname || !email || !password || password.length < 6}
             className="w-full h-[56px] bg-primary text-white rounded-xl font-semibold text-[17px] active:scale-[0.98] transition-transform disabled:opacity-50 flex items-center justify-center"
           >
             {loading ? (

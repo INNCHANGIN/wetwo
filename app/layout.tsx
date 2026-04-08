@@ -55,7 +55,7 @@ export default function RootLayout({
           <ToastProvider>
             <main className="min-h-screen bg-white shadow-sm flex flex-col relative w-full h-full max-w-[390px] mx-auto overflow-hidden">
               {children}
-              <InstallBanner />
+              {/* <InstallBanner /> */}
             </main>
           </ToastProvider>
         </QueryProvider>

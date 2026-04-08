@@ -42,7 +42,7 @@ export default function ConnectPage() {
           return;
         }
       } catch (e) {
-        console.error("Init error:", e);
+        // Init error ignored
       } finally {
         setInitLoading(false);
       }
@@ -100,7 +100,6 @@ export default function ConnectPage() {
     setError("");
 
     const upperCode = inputCode.toUpperCase();
-    console.log("Attempting to connect with code:", upperCode);
 
     // 입력한 코드의 커플 정보 찾기
     const { data: couple, error: findError } = await supabase
@@ -110,11 +109,8 @@ export default function ConnectPage() {
       .is("user2_id", null)
       .single();
 
-    console.log("Find couple result:", { couple, findError });
-
     if (findError || !couple) {
-      console.error("Find error details:", findError);
-      setError("유효하지 않거나 이미 연결된 코드입니다. (상세 에러는 콘솔 확인)");
+      setError('코드가 올바르지 않거나 이미 사용된 코드예요.');
       setLoading(false);
       return;
     }
@@ -126,14 +122,12 @@ export default function ConnectPage() {
     }
 
     // 커플 파트너로 내 아이디 업데이트
-    console.log("Updating couple with partner ID:", currentUser.id);
     const { error: updateError } = await supabase
       .from("couples")
       .update({ user2_id: currentUser.id })
       .eq("id", couple.id);
 
     if (updateError) {
-      console.error("Update error details:", updateError);
       setError(`상대방과 연결하는 데 실패했습니다: ${updateError.message}`);
       setLoading(false);
       return;

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
+import { ChevronLeft } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -53,6 +54,9 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <div className="flex-1 pt-[60px] px-6">
+        <button type="button" onClick={() => router.back()} className="flex items-center gap-1 text-muted mb-6 active:opacity-70 transition-opacity">
+          <ChevronLeft className="w-6 h-6" />
+        </button>
         <h1 className="text-[28px] leading-tight font-bold text-text mb-2">We Two 💑</h1>
         <p className="text-base text-muted mb-10">우리를 위한 특별한 공간</p>
 
