@@ -66,9 +66,9 @@ function NavItem({ href, icon: Icon, label, current, router }: { href: string; i
       <Icon 
         size={24} 
         strokeWidth={isActive ? 2.5 : 2} 
-        className={isActive ? "text-[#3182F6]" : "text-[#6B7684]"} 
+        className={isActive ? "text-primary" : "text-muted"} 
       />
-      <span className={`font-medium ${isActive ? 'text-[14px] text-[#3182F6]' : 'text-[12px] text-[#6B7684]'}`}>
+      <span className={`font-medium ${isActive ? 'text-[14px] text-primary' : 'text-[12px] text-muted'}`}>
         {label}
       </span>
     </Link>

@@ -50,8 +50,16 @@ export default function PhotosPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+      <div className="flex flex-col bg-white min-h-screen">
+        <div className="px-4 pt-4 pb-3">
+          <div className="w-20 h-6 bg-gray-200 rounded-full animate-pulse mb-1.5" />
+          <div className="w-28 h-4 bg-gray-100 rounded-full animate-pulse" />
+        </div>
+        <div className="grid grid-cols-3 gap-[2px]">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="aspect-square bg-gray-100 animate-pulse" />
+          ))}
+        </div>
       </div>
     );
   }

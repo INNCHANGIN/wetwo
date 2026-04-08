@@ -53,8 +53,16 @@ export default function DiaryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+      <div className="flex flex-col px-4 pt-6 gap-4 min-h-screen bg-white">
+        <div className="flex justify-end">
+          <div className="w-[60%] h-20 bg-gray-100 rounded-[20px] rounded-tr-sm animate-pulse" />
+        </div>
+        <div className="flex justify-start">
+          <div className="w-[55%] h-16 bg-gray-100 rounded-[20px] rounded-tl-sm animate-pulse" />
+        </div>
+        <div className="flex justify-end">
+          <div className="w-[50%] h-24 bg-gray-100 rounded-[20px] rounded-tr-sm animate-pulse" />
+        </div>
       </div>
     );
   }

@@ -20,7 +20,7 @@ export default function CalendarPage() {
   const month = currentDate.getMonth();
 
   // 1. 커플 및 유저 정보 가져오기
-  const { data: coupleInfo } = useQuery({
+  const { data: coupleInfo, isPending: isPendingCouple } = useQuery({
     queryKey: ["couple_and_users"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -51,7 +51,7 @@ export default function CalendarPage() {
   const usersInfo = coupleInfo?.usersInfo || {};
 
   // 2. 일정 데이터 가져오기 (월별)
-  const { data: events = [] } = useQuery({
+  const { data: events = [], isPending: isPendingEvents } = useQuery({
     queryKey: ["events", coupleId, year, month],
     queryFn: async () => {
       if (!coupleId) return [];
@@ -121,6 +121,31 @@ export default function CalendarPage() {
     if (cat === 'anniversary') return '기념일';
     return '일상';
   };
+
+  if (isPendingCouple || isPendingEvents) {
+    return (
+      <div className="px-6 pt-6 bg-white min-h-screen">
+        <div className="flex justify-between items-center mb-6">
+          <div className="w-8 h-8 bg-gray-100 rounded-full animate-pulse" />
+          <div className="w-24 h-6 bg-gray-100 rounded-full animate-pulse" />
+          <div className="w-8 h-8 bg-gray-100 rounded-full animate-pulse" />
+        </div>
+        <div className="rounded-3xl border border-gray-100 p-4">
+          <div className="grid grid-cols-7 gap-y-3">
+            {Array.from({ length: 35 }).map((_, i) => (
+              <div key={i} className="flex justify-center">
+                <div className="w-9 h-9 bg-gray-100 rounded-full animate-pulse" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="mt-8">
+          <div className="w-32 h-5 bg-gray-100 rounded-full animate-pulse mb-4" />
+          <div className="w-full h-16 bg-gray-100 rounded-2xl animate-pulse" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -224,7 +249,7 @@ export default function CalendarPage() {
       {/* FAB Floating Action Button */}
       <Link 
         href={`/calendar/new?date=${selectedLocalStr}`} 
-        className="fixed bottom-[100px] left-1/2 ml-[120px] w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-[0_4px_16px_rgba(49,130,246,0.3)] hover:scale-105 active:scale-95 transition-transform z-50"
+        className="fixed bottom-[100px] left-1/2 ml-[120px] w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-[0_4px_16px_rgba(240,98,146,0.3)] hover:scale-105 active:scale-95 transition-transform z-50"
       >
         <Plus size={28} strokeWidth={2.5} />
       </Link>

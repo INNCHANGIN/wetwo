@@ -73,8 +73,31 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+      <div className="flex flex-col min-h-screen bg-white">
+        {/* D+ 카운터 영역 */}
+        <div className="px-6 pt-10 pb-8 flex flex-col gap-2">
+          <div className="w-40 h-5 bg-gray-100 rounded-full animate-pulse" />
+        </div>
+        {/* 다가오는 일정 섹션 */}
+        <div className="px-6 mb-8">
+          <div className="w-28 h-5 bg-gray-100 rounded-full animate-pulse mb-3" />
+          <div className="w-full h-20 bg-gray-100 rounded-2xl animate-pulse" />
+        </div>
+        {/* 사진 섹션 */}
+        <div className="px-6 mb-8">
+          <div className="w-28 h-5 bg-gray-100 rounded-full animate-pulse mb-3" />
+          <div className="flex gap-3">
+            {[0, 1, 2].map(i => <div key={i} className="min-w-[120px] aspect-square bg-gray-100 rounded-xl animate-pulse" />)}
+          </div>
+        </div>
+        {/* 다이어리 섹션 */}
+        <div className="px-6">
+          <div className="w-32 h-5 bg-gray-100 rounded-full animate-pulse mb-4" />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="h-24 bg-gray-100 rounded-2xl animate-pulse" />
+            <div className="h-24 bg-gray-100 rounded-2xl animate-pulse" />
+          </div>
+        </div>
       </div>
     );
   }
