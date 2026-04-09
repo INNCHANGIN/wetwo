@@ -130,11 +130,16 @@ export default function HomeContent({ initialData, userId }: HomeContentProps) {
           </div>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {recentPhotos && recentPhotos.length > 0 ? (
-              recentPhotos.map((p: any) => (
-                <div key={p.id} className="min-w-[120px] aspect-square bg-gray-100 rounded-xl overflow-hidden relative border border-border/30">
-                  <Image src={p.storage_path} alt="photo" fill className="object-cover" />
-                </div>
-              ))
+              recentPhotos.map((p: any) => {
+                const url = p.storage_path.startsWith("http") 
+                  ? p.storage_path 
+                  : supabase.storage.from("couples").getPublicUrl(p.storage_path).data.publicUrl;
+                return (
+                  <div key={p.id} className="min-w-[120px] aspect-square bg-gray-100 rounded-xl overflow-hidden relative border border-border/30">
+                    <Image src={url} alt="photo" fill className="object-cover" />
+                  </div>
+                );
+              })
             ) : (
               <div className="w-full bg-[#F9FAFB] py-8 rounded-2xl border border-dashed border-border/40 text-center">
                 <p className="text-[14px] text-muted">아직 사진이 없어요</p>

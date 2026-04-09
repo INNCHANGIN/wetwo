@@ -35,17 +35,22 @@ export default function PhotosContent({ initialPhotos, initialCount, coupleId }:
       </div>
 
       <div className="grid grid-cols-3 gap-[2px] pb-[90px]">
-        {photos?.map((photo) => (
-          <Link key={photo.id} href={`/photos/detail?id=${photo.id}`} className="aspect-square bg-surface overflow-hidden relative cursor-pointer group active:opacity-80 transition-opacity">
-            <Image 
-               src={photo.storage_path} 
-               alt={photo.caption || "사진"} 
-               fill
-               sizes="(max-width: 768px) 33vw, 33vw"
-               className="object-cover"
-            />
-          </Link>
-        ))}
+        {photos?.map((photo) => {
+          const url = photo.storage_path.startsWith("http") 
+            ? photo.storage_path 
+            : supabase.storage.from("couples").getPublicUrl(photo.storage_path).data.publicUrl;
+          return (
+            <Link key={photo.id} href={`/photos/detail?id=${photo.id}`} className="aspect-square bg-surface overflow-hidden relative cursor-pointer group active:opacity-80 transition-opacity">
+              <Image 
+                 src={url} 
+                 alt={photo.caption || "사진"} 
+                 fill
+                 sizes="(max-width: 768px) 33vw, 33vw"
+                 className="object-cover"
+              />
+            </Link>
+          );
+        })}
       </div>
 
       <Link 

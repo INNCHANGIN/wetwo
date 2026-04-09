@@ -92,7 +92,9 @@ export default function PhotoDetailPage() {
       {/* 풀 스크린 고화질 뷰어 */}
       <div className="flex-1 flex items-center justify-center overflow-hidden relative">
         <Image 
-          src={photo.storage_path} 
+          src={photo.storage_path.startsWith("http") 
+            ? photo.storage_path 
+            : supabase.storage.from("couples").getPublicUrl(photo.storage_path).data.publicUrl} 
           alt={photo.caption || "사진"} 
           fill
           priority
