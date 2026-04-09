@@ -28,8 +28,10 @@ export default function LoginPage() {
     if (signInError) {
       if (signInError.message.includes("Email not confirmed")) {
         setError("이메일 인증이 완료되지 않았습니다. 메일함을 확인해주세요.");
-      } else {
+      } else if (signInError.status === 400) {
         setError("이메일이나 비밀번호가 올바르지 않습니다.");
+      } else {
+        setError(`로그인 오류: ${signInError.message} (상태: ${signInError.status || 'unknown'})`);
       }
       setLoading(false);
       return;
@@ -97,6 +99,15 @@ export default function LoginPage() {
             아직 계정이 없으신가요? <span className="text-primary font-semibold">회원가입하기</span>
           </Link>
         </div>
+
+        {/* 빌드 디버그 정보 (APK 문제 진단용, 실제 서비스 시 숨기거나 관리자용으로 사용 가능) */}
+        {process.env.NODE_ENV === 'production' && (
+          <div className="mt-auto pb-6 text-center">
+            <p className="text-[10px] text-muted/30">
+              Config: {process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('placeholder') ? '⚠️ Placeholder' : '✅ Production'}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

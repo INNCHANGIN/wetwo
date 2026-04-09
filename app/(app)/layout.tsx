@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Home, Calendar, Image as ImageIcon, FileText, Beer, UserCircle, Bell } from "lucide-react";
+import AuthGuard from "@/components/providers/AuthGuard";
 
 export default function AppLayout({
   children,
@@ -40,7 +41,9 @@ export default function AppLayout({
 
       {/* Content */}
       <div className="flex-1 w-full bg-white pb-[80px]">
-        {children}
+        <AuthGuard>
+          {children}
+        </AuthGuard>
       </div>
       
       {/* Bottom Navigation */}
