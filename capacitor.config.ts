@@ -5,7 +5,10 @@ const config: CapacitorConfig = {
   appName: 'we-two',
   webDir: 'out',
   server: {
-    androidScheme: 'https'
+    androidScheme: 'https',
+    allowNavigation: [
+      '*.supabase.co'
+    ]
   }
 };
 

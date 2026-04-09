@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [debugUrl, setDebugUrl] = useState(""); // 추가
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -30,6 +31,12 @@ export default function LoginPage() {
         setError("이메일 인증이 완료되지 않았습니다. 메일함을 확인해주세요.");
       } else if (signInError.status === 400) {
         setError("이메일이나 비밀번호가 올바르지 않습니다.");
+      } else if (signInError.message === "Failed to fetch") {
+        const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+        const masked = rawUrl.length > 10 
+          ? `${rawUrl.substring(0, 12)}***${rawUrl.substring(rawUrl.length - 5)}`
+          : 'Invalid URL';
+        setError(`네트워크 오류가 발생했습니다. 서버 주소를 확인해주세요. (Target: ${masked})`);
       } else {
         setError(`로그인 오류: ${signInError.message} (상태: ${signInError.status || 'unknown'})`);
       }
