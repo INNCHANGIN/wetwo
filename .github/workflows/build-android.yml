@@ -24,6 +24,17 @@ jobs:
       - name: Install Dependencies
         run: npm ci || npm install
 
+      - name: Check Secrets
+        run: |
+          if [ -z "${{ secrets.SUPABASE_URL }}" ]; then
+            echo "::error::SUPABASE_URL secret is missing! Please add it to GitHub Settings > Secrets > Actions."
+            exit 1
+          fi
+          if [ -z "${{ secrets.SUPABASE_ANON_KEY }}" ]; then
+            echo "::error::SUPABASE_ANON_KEY secret is missing! Please add it to GitHub Settings > Secrets > Actions."
+            exit 1
+          fi
+
       - name: Build Next.js Web App
         run: npm run build
         env:
