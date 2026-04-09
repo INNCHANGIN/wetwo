@@ -109,7 +109,7 @@ export default function PhotoDetailPage() {
             {photoData?.linkedEvents && photoData.linkedEvents.length > 0 && (
               <div className="flex gap-2 mb-3 overflow-x-auto pb-1 hide-scrollbar">
                 {photoData.linkedEvents.map((evt: any) => (
-                  <Link href={`/calendar/${evt.id}`} key={evt.id} className="bg-white/20 hover:bg-white/30 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-colors">
+                  <Link href={`/calendar/detail?id=${evt.id}`} key={evt.id} className="bg-white/20 hover:bg-white/30 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-colors">
                     <span>📅</span>
                     <span>{evt.title}</span>
                   </Link>

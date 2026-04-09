@@ -71,7 +71,7 @@ export default function BrewingPage() {
             {logs.map((log) => (
               <Link 
                 key={log.id} 
-                href={`/brewing/${log.id}`}
+                href={`/brewing/detail?id=${log.id}`}
                 className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between active:scale-[0.98] transition-transform"
               >
                 <div className="flex-1 min-w-0 pr-4">
@@ -93,7 +93,7 @@ export default function BrewingPage() {
       </div>
 
       <button
-        onClick={() => router.push("/brewing/new")}
+        onClick={() => router.push("/brewing/detail?id=new")}
         className="fixed bottom-[calc(80px+env(safe-area-inset-bottom))] right-6 w-14 h-14 bg-orange-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-orange-600 transition-colors active:scale-95 z-40"
       >
         <Plus size={28} strokeWidth={2.5} />

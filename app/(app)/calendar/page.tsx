@@ -216,7 +216,7 @@ export default function CalendarPage() {
               selectedEvents.map(evt => {
                 const author = usersInfo[evt.created_by];
                 return (
-                  <Link href={`/calendar/${evt.id}`} key={evt.id} className="bg-white p-4 rounded-2xl border border-border/50 shadow-sm flex items-center gap-4 active:scale-[0.98] transition-transform">
+                  <Link href={`/calendar/detail?id=${evt.id}`} key={evt.id} className="bg-white p-4 rounded-2xl border border-border/50 shadow-sm flex items-center gap-4 active:scale-[0.98] transition-transform">
                     <div className={`shrink-0 px-2.5 py-1.5 rounded-lg text-[12px] font-bold ${getCategoryColor(evt.category)}`}>
                       {getCategoryLabel(evt.category)}
                     </div>

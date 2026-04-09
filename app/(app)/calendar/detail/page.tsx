@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { ChevronLeft, Calendar as CalendarIcon, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 
-export default function EventDetailPage({ params }: { params: { id: string } }) {
+export default function EventDetailPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState<any>(null);
@@ -22,7 +24,7 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
         const { data: evt } = await supabase
           .from("events")
           .select("*")
-          .eq("id", params.id)
+          .eq("id", id)
           .single();
 
         if (evt) {
@@ -44,7 +46,7 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
       }
     }
     loadEventData();
-  }, [params.id, supabase, router]);
+  }, [id, supabase, router]);
 
   if (loading) {
     return <div className="min-h-screen bg-white" />;

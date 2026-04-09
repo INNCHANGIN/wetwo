@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { ChevronLeft, Trash2, Check, Calendar as CalendarIcon, Thermometer } from "lucide-react";
 
-export default function BrewingEditorPage({ params }: { params: { id: string } }) {
+export default function BrewingEditorPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const supabase = createClient();
-  const isNew = params.id === "new";
+  const isNew = id === "new";
   
   const [formData, setFormData] = useState({
     name: "", malt: "", hops: "", yeast: "",
@@ -38,7 +40,7 @@ export default function BrewingEditorPage({ params }: { params: { id: string } }
         const { data: log } = await supabase
           .from("brewing_logs")
           .select("*")
-          .eq("id", params.id)
+          .eq("id", id)
           .single();
         
         if (log) {
@@ -57,7 +59,7 @@ export default function BrewingEditorPage({ params }: { params: { id: string } }
       }
     }
     initUserAndLog();
-  }, [supabase, router, isNew, params.id]);
+  }, [supabase, router, isNew, id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -78,7 +80,7 @@ export default function BrewingEditorPage({ params }: { params: { id: string } }
       if (isNew) {
         await supabase.from("brewing_logs").insert({ ...payload, created_by: userId, created_at: new Date().toISOString() });
       } else {
-        await supabase.from("brewing_logs").update(payload).eq("id", params.id);
+        await supabase.from("brewing_logs").update(payload).eq("id", id);
       }
       router.push("/brewing");
       router.refresh();
@@ -92,7 +94,7 @@ export default function BrewingEditorPage({ params }: { params: { id: string } }
   const handleDelete = async () => {
     if (isNew || !confirm("일지를 삭제하시겠습니까?")) return;
     try {
-      await supabase.from("brewing_logs").delete().eq("id", params.id);
+      await supabase.from("brewing_logs").delete().eq("id", id);
       router.push("/brewing");
       router.refresh();
     } catch (error) {}

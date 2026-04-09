@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { ChevronLeft, Trash2, Check } from "lucide-react";
 
-export default function MemoEditorPage({ params }: { params: { id: string } }) {
+export default function MemoEditorPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const supabase = createClient();
-  const isNew = params.id === "new";
+  const isNew = id === "new";
   
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(!isNew);
@@ -41,7 +43,7 @@ export default function MemoEditorPage({ params }: { params: { id: string } }) {
         const { data: memo } = await supabase
           .from("memos")
           .select("content")
-          .eq("id", params.id)
+          .eq("id", id)
           .single();
         
         if (memo) {
@@ -54,7 +56,7 @@ export default function MemoEditorPage({ params }: { params: { id: string } }) {
     }
 
     initUserAndMemo();
-  }, [supabase, router, isNew, params.id]);
+  }, [supabase, router, isNew, id]);
 
   const handleSave = async () => {
     if (!content.trim() || !coupleId || !userId) return;
@@ -72,7 +74,7 @@ export default function MemoEditorPage({ params }: { params: { id: string } }) {
           content: content.trim(),
           author_id: userId,
           updated_at: new Date().toISOString(),
-        }).eq("id", params.id);
+        }).eq("id", id);
       }
       router.push("/memo");
       router.refresh();
@@ -87,7 +89,7 @@ export default function MemoEditorPage({ params }: { params: { id: string } }) {
     if (isNew || !confirm("이 메모를 삭제하시겠습니까?")) return;
     
     try {
-      await supabase.from("memos").delete().eq("id", params.id);
+      await supabase.from("memos").delete().eq("id", id);
       router.push("/memo");
       router.refresh();
     } catch (error) {
