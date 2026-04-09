@@ -21,7 +21,8 @@ export interface Event {
   created_by: string
   title: string
   date: string
-  category: 'date' | 'anniversary' | 'daily'
+  end_date?: string
+  category?: string
   is_recurring: boolean
 }
 

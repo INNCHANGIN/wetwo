@@ -74,7 +74,11 @@ export default function EventDetailPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-2">{event.title}</h1>
         <div className="flex items-center gap-2 text-gray-500 mb-8">
           <CalendarIcon size={18} />
-          <span>{event.date}</span>
+          <span>
+            {event.date === (event.end_date || event.date) 
+              ? event.date 
+              : `${event.date} ~ ${event.end_date}`}
+          </span>
         </div>
 
         {linkedPhotos.length > 0 && (

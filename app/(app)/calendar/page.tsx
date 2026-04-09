@@ -60,7 +60,7 @@ export default function CalendarPage() {
       const endStr = new Date(year, month + 1, 0).toISOString().substring(0, 10);
       
       const [{ data: regularEvents }, { data: recurringEvents }] = await Promise.all([
-        supabase.from("events").select("*").eq("couple_id", coupleId).eq("is_recurring", false).gte("date", startStr).lte("date", endStr),
+        supabase.from("events").select("*").eq("couple_id", coupleId).eq("is_recurring", false).or(`date.lte.${endStr},end_date.gte.${startStr}`),
         supabase.from("events").select("*").eq("couple_id", coupleId).eq("is_recurring", true)
       ]);
       
@@ -108,18 +108,18 @@ export default function CalendarPage() {
   const todayLocalStr = getLocalDateStr(todayObj.getFullYear(), todayObj.getMonth(), todayObj.getDate());
   const selectedLocalStr = getLocalDateStr(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
   
-  const selectedEvents = events.filter(e => e.date === selectedLocalStr);
+  const selectedEvents = events.filter(e => {
+    const start = e.date;
+    const end = e.end_date || e.date;
+    return selectedLocalStr >= start && selectedLocalStr <= end;
+  });
 
-  const getCategoryColor = (cat: string) => {
-    if (cat === 'date') return 'bg-pink-100 text-pink-600';
-    if (cat === 'anniversary') return 'bg-yellow-100 text-yellow-600';
-    return 'bg-blue-100 text-blue-600';
+  const getCategoryColor = (cat?: string) => {
+    return 'bg-primary/10 text-primary';
   };
   
-  const getCategoryLabel = (cat: string) => {
-    if (cat === 'date') return '데이트';
-    if (cat === 'anniversary') return '기념일';
-    return '일상';
+  const getCategoryLabel = (cat?: string) => {
+    return '';
   };
 
   if (isPendingCouple || isPendingEvents) {
@@ -181,24 +181,42 @@ export default function CalendarPage() {
               const dateStr = getLocalDateStr(year, month, d);
               const isToday = dateStr === todayLocalStr;
               const isSelected = dateStr === selectedLocalStr;
-              const hasEvents = events.some(e => e.date === dateStr);
+              
+              const dayEvents = events.filter(e => {
+                const start = e.date;
+                const end = e.end_date || e.date;
+                return dateStr >= start && dateStr <= end;
+              }).slice(0, 2); // 최대 2개만 표시
               
               return (
                 <div 
                   key={d} 
                   onClick={() => setSelectedDate(new Date(year, month, d))}
-                  className="flex flex-col items-center justify-start h-[48px] cursor-pointer"
+                  className={`flex flex-col items-center justify-start min-h-[64px] pt-1 cursor-pointer border-t border-gray-50 transition-colors
+                    ${isSelected ? 'bg-primary/5' : ''}
+                  `}
                 >
-                  <div className={`w-9 h-9 flex items-center justify-center rounded-full text-[15px] transition-colors
+                  <div className={`w-7 h-7 flex items-center justify-center rounded-full text-[13px] mb-1 transition-colors
                     ${isSelected ? 'bg-primary text-white font-bold shadow-sm' : 
-                      isToday ? 'bg-primary/10 text-primary font-bold' : 'text-text hover:bg-surface font-medium'}
+                      isToday ? 'bg-primary/10 text-primary font-bold' : 'text-text font-medium'}
                   `}>
                     {d}
                   </div>
-                  {/* 이벤트 점 표시 */}
-                  {hasEvents && (
-                    <div className={`w-1.5 h-1.5 rounded-full mt-0.5 ${isSelected ? 'bg-primary/30' : 'bg-primary'}`} />
-                  )}
+                  
+                  {/* 일정 바/타이틀 표시 */}
+                  <div className="w-full px-0.5 flex flex-col gap-0.5 mt-0.5">
+                    {dayEvents.map(evt => (
+                      <div 
+                        key={evt.id} 
+                        className={`text-[9px] px-1 py-0.5 rounded-[4px] truncate w-full text-center font-bold
+                          ${isSelected ? 'bg-white/40 text-primary' : 'bg-primary/10 text-primary'}
+                        `}
+                      >
+                        {evt.title}
+                      </div>
+                    ))}
+                    {dayEvents.length === 0 && <div className="h-4" />} {/* 레이아웃 유지용 */}
+                  </div>
                 </div>
               );
             })}
@@ -217,11 +235,13 @@ export default function CalendarPage() {
                 const author = usersInfo[evt.created_by];
                 return (
                   <Link href={`/calendar/detail?id=${evt.id}`} key={evt.id} className="bg-white p-4 rounded-2xl border border-border/50 shadow-sm flex items-center gap-4 active:scale-[0.98] transition-transform">
-                    <div className={`shrink-0 px-2.5 py-1.5 rounded-lg text-[12px] font-bold ${getCategoryColor(evt.category)}`}>
-                      {getCategoryLabel(evt.category)}
-                    </div>
                     <div className="flex-1">
                       <p className="text-[15px] font-bold text-text leading-tight">{evt.title}</p>
+                      <p className="text-[12px] text-muted mt-1">
+                        {evt.date === (evt.end_date || evt.date) 
+                          ? evt.date 
+                          : `${evt.date} ~ ${evt.end_date}`}
+                      </p>
                     </div>
                     {author && (
                       <div className="flex-shrink-0">

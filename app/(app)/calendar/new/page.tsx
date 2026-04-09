@@ -20,7 +20,8 @@ export default function NewEventPage() {
   
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(initialDate);
-  const [category, setCategory] = useState<'date' | 'anniversary' | 'daily'>('date');
+  const [endDate, setEndDate] = useState(initialDate);
+  const [isPeriod, setIsPeriod] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
 
   // 다중 사진 선택기
@@ -47,7 +48,8 @@ export default function NewEventPage() {
         if (evt) {
           setTitle(evt.title);
           setDate(evt.date);
-          setCategory(evt.category);
+          setEndDate(evt.end_date || evt.date);
+          setIsPeriod(evt.date !== (evt.end_date || evt.date));
           setIsRecurring(evt.is_recurring);
 
           const { data: mappings } = await supabase.from("event_photos").select("photo_id").eq("event_id", editId);
@@ -73,11 +75,15 @@ export default function NewEventPage() {
 
     try {
       let eventId = editId;
+      const finalEndDate = isPeriod ? endDate : date;
 
       if (isEdit) {
         // 기존 업데이트
         await supabase.from("events").update({
-          title, date, category, is_recurring: isRecurring
+          title, 
+          date, 
+          end_date: finalEndDate,
+          is_recurring: isRecurring
         }).eq("id", editId);
 
         // 기존 맵핑 제거
@@ -87,7 +93,10 @@ export default function NewEventPage() {
         const { data: newEvt, error } = await supabase.from("events").insert({
           couple_id: coupleId,
           created_by: userId,
-          title, date, category, is_recurring: isRecurring
+          title, 
+          date, 
+          end_date: finalEndDate,
+          is_recurring: isRecurring
         }).select("id").single();
         if (error) throw error;
         eventId = newEvt.id;
@@ -126,6 +135,8 @@ export default function NewEventPage() {
     { id: 'daily', label: '일상', color: 'bg-blue-100 text-blue-600 border-blue-200' }
   ];
 
+  const canSave = title.trim() && date && (!isPeriod || (endDate >= date));
+
   if (loading) {
     return <div className="min-h-screen bg-white" />;
   }
@@ -162,35 +173,56 @@ export default function NewEventPage() {
           />
         </div>
 
-        {/* 카테고리 선택 */}
-        <div>
-          <label className="block text-[14px] font-semibold text-muted mb-3">카테고리</label>
-          <div className="flex gap-2">
-            {categories.map(c => (
-              <button
-                key={c.id}
-                onClick={() => setCategory(c.id as any)}
-                className={`px-4 py-2 rounded-xl text-[14px] font-bold border transition-all active:scale-95 flex items-center gap-1.5
-                  ${category === c.id 
-                    ? c.color 
-                    : 'bg-surface text-muted border-transparent hover:bg-gray-100'}`}
-              >
-                {category === c.id && <Check size={16} strokeWidth={3} />}
-                {c.label}
-              </button>
-            ))}
+        {/* 날짜 선택 (단일/기간) */}
+        <div className="flex flex-col gap-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <label className="block text-[16px] font-semibold text-text">기간 설정</label>
+              <p className="text-[13px] text-muted">며칠 동안 이어지는 일정인가요?</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={isPeriod}
+                onChange={(e) => {
+                  setIsPeriod(e.target.checked);
+                  if (!e.target.checked) setEndDate(date);
+                }}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            </label>
           </div>
-        </div>
 
-        {/* 날짜 선택 */}
-        <div>
-          <label className="block text-[14px] font-semibold text-muted mb-2">날짜</label>
-          <input 
-            type="date" 
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full bg-surface h-[56px] px-4 rounded-xl text-[16px] font-medium text-text border border-transparent focus:outline-none focus:border-primary"
-          />
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-[14px] font-semibold text-muted mb-2">
+                {isPeriod ? "시작일" : "날짜"}
+              </label>
+              <input 
+                type="date" 
+                value={date}
+                onChange={(e) => {
+                  setDate(e.target.value);
+                  if (!isPeriod) setEndDate(e.target.value);
+                }}
+                className="w-full bg-surface h-[56px] px-4 rounded-xl text-[16px] font-medium text-text border border-transparent focus:outline-none focus:border-primary"
+              />
+            </div>
+
+            {isPeriod && (
+              <div className="fade-in">
+                <label className="block text-[14px] font-semibold text-muted mb-2">종료일</label>
+                <input 
+                  type="date" 
+                  value={endDate}
+                  min={date}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full bg-surface h-[56px] px-4 rounded-xl text-[16px] font-medium text-text border border-transparent focus:outline-none focus:border-primary"
+                />
+              </div>
+            )}
+          </div>
         </div>
 
         {/* 반복 여부 토글 */}
@@ -249,7 +281,7 @@ export default function NewEventPage() {
       <div className="fixed bottom-[calc(76px+env(safe-area-inset-bottom))] w-full max-w-[390px] left-1/2 -translate-x-1/2 px-4 z-50 pointer-events-none">
         <button 
           onClick={handleSave}
-          disabled={saving || !title || !date}
+          disabled={saving || !canSave}
           className="w-full h-[56px] bg-primary text-white rounded-xl font-bold text-[17px] shadow-[0_8px_20px_rgba(240,98,146,0.3)] active:scale-[0.98] transition-transform disabled:opacity-50 flex items-center justify-center pointer-events-auto"
         >
           {saving ? "저장 중..." : "일정 저장하기"}
