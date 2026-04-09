@@ -58,11 +58,16 @@ export default function EventDetailPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md flex items-center px-4 h-14 border-b border-border/50">
-        <button onClick={() => router.back()} className="p-2 -ml-2 text-gray-600">
-          <ChevronLeft size={24} />
-        </button>
-        <span className="font-semibold text-gray-800 ml-2">일정 상세</span>
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md flex items-center justify-between px-4 h-14 border-b border-border/50">
+        <div className="flex items-center">
+          <button onClick={() => router.back()} className="p-2 -ml-2 text-gray-600">
+            <ChevronLeft size={24} />
+          </button>
+          <span className="font-semibold text-gray-800 ml-2">일정 상세</span>
+        </div>
+        <Link href={`/calendar/new?edit=${event.id}`} className="px-3 py-1.5 rounded-full bg-surface text-primary font-bold text-[13px] active:scale-95 transition-transform">
+          편집
+        </Link>
       </header>
       
       <main className="p-6">
