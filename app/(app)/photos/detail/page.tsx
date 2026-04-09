@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { ArrowLeft, Heart } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 
 export default function PhotoDetailPage() {
@@ -22,9 +23,13 @@ export default function PhotoDetailPage() {
       const { data: photo } = await supabase.from("photos").select("*").eq("id", id).single();
       if (!photo) return null;
 
-      const { data: uploader } = await supabase.from("users").select("nickname, avatar_url").eq("id", photo.uploaded_by).single();
+      const [{ data: uploader }, { data: eventLinks }] = await Promise.all([
+        supabase.from("users").select("nickname, avatar_url").eq("id", photo.uploaded_by).single(),
+        supabase.from("event_photos").select("events(*)").eq("photo_id", id)
+      ]);
       
-      return { photo, uploader };
+      const linkedEvents = eventLinks?.map(el => el.events).filter(Boolean) || [];
+      return { photo, uploader, linkedEvents };
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -100,7 +105,17 @@ export default function PhotoDetailPage() {
       {/* 하단 캡션 정보 및 UI */}
       <div className="absolute bottom-0 w-full z-50 bg-gradient-to-t from-black/95 via-black/60 to-transparent p-6 pt-16 text-white pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
         <div className="flex justify-between items-end gap-6 max-w-[390px] mx-auto">
-          <div className="flex-1">
+          <div className="flex-1 w-full overflow-hidden">
+            {photoData?.linkedEvents && photoData.linkedEvents.length > 0 && (
+              <div className="flex gap-2 mb-3 overflow-x-auto pb-1 hide-scrollbar">
+                {photoData.linkedEvents.map((evt: any) => (
+                  <Link href={`/calendar/${evt.id}`} key={evt.id} className="bg-white/20 hover:bg-white/30 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-colors">
+                    <span>📅</span>
+                    <span>{evt.title}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
             {uploader && (
               <div className="flex items-center gap-2.5 mb-2.5">
                 {uploader.avatar_url ? (

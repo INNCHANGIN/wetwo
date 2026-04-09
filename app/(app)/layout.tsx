@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { Home, Calendar, Image as ImageIcon, BookOpen, Bell, UserCircle } from "lucide-react";
+import { Home, Calendar, Image as ImageIcon, FileText, Beer, UserCircle, Bell } from "lucide-react";
 
 export default function AppLayout({
   children,
@@ -16,7 +16,8 @@ export default function AppLayout({
     if (pathname.includes("/home")) return "우리 홈";
     if (pathname.includes("/calendar")) return "캘린더";
     if (pathname.includes("/photos")) return "사진첩";
-    if (pathname.includes("/diary")) return "다이어리";
+    if (pathname.includes("/memo")) return "메모장";
+    if (pathname.includes("/brewing")) return "브루잉 일지";
     if (pathname.includes("/mypage")) return "마이페이지";
     if (pathname.includes("/settings")) return "설정";
     return "";
@@ -27,9 +28,14 @@ export default function AppLayout({
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md flex items-center justify-between px-6 h-14 border-b border-border/50">
         <h1 className="text-lg font-bold text-text">{getPageTitle()}</h1>
-        <button className="text-text hover:text-primary transition-colors active:scale-95">
-          <Bell size={24} strokeWidth={2} />
-        </button>
+        <div className="flex items-center gap-4">
+          <button className="text-text hover:text-primary transition-colors active:scale-95">
+            <Bell size={24} strokeWidth={2} />
+          </button>
+          <Link href="/mypage" className="text-text hover:text-primary transition-colors active:scale-95">
+            <UserCircle size={24} strokeWidth={2} />
+          </Link>
+        </div>
       </header>
 
       {/* Content */}
@@ -42,8 +48,8 @@ export default function AppLayout({
         <NavItem href="/home" icon={Home} label="홈" current={pathname} router={router} />
         <NavItem href="/calendar" icon={Calendar} label="캘린더" current={pathname} router={router} />
         <NavItem href="/photos" icon={ImageIcon} label="포토" current={pathname} router={router} />
-        <NavItem href="/diary" icon={BookOpen} label="일기" current={pathname} router={router} />
-        <NavItem href="/mypage" icon={UserCircle} label="MY" current={pathname} router={router} />
+        <NavItem href="/memo" icon={FileText} label="메모" current={pathname} router={router} />
+        <NavItem href="/brewing" icon={Beer} label="브루잉" current={pathname} router={router} />
       </nav>
     </div>
   );
