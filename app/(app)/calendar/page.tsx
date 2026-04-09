@@ -269,7 +269,7 @@ export default function CalendarPage() {
       {/* FAB Floating Action Button */}
       <Link 
         href={`/calendar/new?date=${selectedLocalStr}`} 
-        className="fixed bottom-[100px] left-1/2 ml-[120px] w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-[0_4px_16px_rgba(240,98,146,0.3)] hover:scale-105 active:scale-95 transition-transform z-50"
+        className="fixed bottom-[calc(100px+env(safe-area-inset-bottom))] left-1/2 ml-[120px] w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-[0_4px_16px_rgba(240,98,146,0.3)] hover:scale-105 active:scale-95 transition-transform z-50"
       >
         <Plus size={28} strokeWidth={2.5} />
       </Link>

@@ -79,10 +79,9 @@ export default function MemoPage() {
         )}
       </div>
 
-      {/* Floating Action Button */}
       <button
         onClick={() => router.push("/memo/detail?id=new")}
-        className="fixed bottom-[calc(80px+env(safe-area-inset-bottom))] right-6 w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-lg hover:bg-primary-dark transition-colors active:scale-95 z-40"
+        className="fixed bottom-[calc(100px+env(safe-area-inset-bottom))] right-6 w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-lg hover:bg-primary-dark transition-colors active:scale-95 z-40"
       >
         <Plus size={28} strokeWidth={2.5} />
       </button>

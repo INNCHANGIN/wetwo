@@ -48,8 +48,8 @@ export default function BrewingPage() {
         
         {!logs || logs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-              <Beer className="text-orange-500" size={32} />
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <Beer className="text-primary" size={32} />
             </div>
             <p className="text-gray-500 text-sm">기록된 양조 일지가 없어요.<br />첫 맥주를 기록해보세요!</p>
           </div>
@@ -63,7 +63,7 @@ export default function BrewingPage() {
               >
                 <div className="flex-1 min-w-0 pr-4">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="bg-orange-100 text-orange-600 text-xs font-bold px-2 py-0.5 rounded-md">
+                    <span className="bg-primary/10 text-primary text-xs font-bold px-2 py-0.5 rounded-md">
                       {log.fermentation_temp ? `${log.fermentation_temp}℃` : "온도 미상"}
                     </span>
                     <p className="text-gray-800 font-bold truncate text-[16px]">{log.name}</p>
@@ -81,7 +81,7 @@ export default function BrewingPage() {
 
       <button
         onClick={() => router.push("/brewing/detail?id=new")}
-        className="fixed bottom-[calc(80px+env(safe-area-inset-bottom))] right-6 w-14 h-14 bg-orange-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-orange-600 transition-colors active:scale-95 z-40"
+        className="fixed bottom-[calc(100px+env(safe-area-inset-bottom))] right-6 w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-lg hover:bg-primary-dark transition-colors active:scale-95 z-40"
       >
         <Plus size={28} strokeWidth={2.5} />
       </button>

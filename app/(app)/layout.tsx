@@ -27,8 +27,8 @@ export default function AppLayout({
   return (
     <div className="flex flex-col min-h-screen relative w-full h-full">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md flex items-center justify-between px-6 h-14 border-b border-border/50">
-        <h1 className="text-lg font-bold text-text">{getPageTitle()}</h1>
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md flex items-end justify-between px-6 pb-3 min-h-[calc(56px+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] border-b border-border/50">
+        <h1 className="text-lg font-bold text-text leading-none">{getPageTitle()}</h1>
         <div className="flex items-center gap-4">
           <button className="text-text hover:text-primary transition-colors active:scale-95">
             <Bell size={24} strokeWidth={2} />

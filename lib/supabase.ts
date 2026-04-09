@@ -14,6 +14,13 @@ export function createClient() {
 
   return createBrowserClient(
     url || 'https://placeholder-url.supabase.co',
-    anonKey || 'placeholder-anon-key'
+    anonKey || 'placeholder-anon-key',
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    }
   )
 }
