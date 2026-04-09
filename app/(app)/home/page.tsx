@@ -43,14 +43,12 @@ export default function HomePage() {
           { data: myProfile },
           partnerProfile,
           { data: nextEvents },
-          { data: recentPhotos },
-          { data: todaysDiaries }
+          { data: recentPhotos }
         ] = await Promise.all([
           supabase.from("users").select("*").eq("id", currentUser.id).single(),
           getPartnerInfo(supabase, couple.id, currentUser.id),
           supabase.from("events").select("*").eq("couple_id", couple.id).gte("date", todayStr).order("date", { ascending: true }).limit(1),
-          supabase.from("photos").select("*").eq("couple_id", couple.id).order("taken_at", { ascending: false }).limit(3),
-          supabase.from("diaries").select("author_id").eq("couple_id", couple.id).eq("diary_date", todayStr)
+          supabase.from("photos").select("*").eq("couple_id", couple.id).order("taken_at", { ascending: false }).limit(3)
         ]);
 
         setInitialData({
@@ -58,8 +56,7 @@ export default function HomePage() {
           myProfile,
           partnerProfile,
           nextEvent: nextEvents?.[0],
-          recentPhotos,
-          todaysDiaries
+          recentPhotos
         });
       } catch (error) {
         console.error("Error loading home data:", error);
@@ -88,14 +85,6 @@ export default function HomePage() {
           <div className="w-28 h-5 bg-gray-100 rounded-full animate-pulse mb-3" />
           <div className="flex gap-3">
             {[0, 1, 2].map(i => <div key={i} className="min-w-[120px] aspect-square bg-gray-100 rounded-xl animate-pulse" />)}
-          </div>
-        </div>
-        {/* 다이어리 섹션 */}
-        <div className="px-6">
-          <div className="w-32 h-5 bg-gray-100 rounded-full animate-pulse mb-4" />
-          <div className="grid grid-cols-2 gap-4">
-            <div className="h-24 bg-gray-100 rounded-2xl animate-pulse" />
-            <div className="h-24 bg-gray-100 rounded-2xl animate-pulse" />
           </div>
         </div>
       </div>

@@ -84,7 +84,9 @@ export default function EventDetailPage() {
             </h3>
             <div className="flex gap-3 overflow-x-auto pb-4 snap-x">
               {linkedPhotos.map(photo => {
-                const url = supabase.storage.from("photos").getPublicUrl(photo.storage_path).data.publicUrl;
+                const url = photo.storage_path.startsWith("http") 
+                  ? photo.storage_path 
+                  : supabase.storage.from("couples").getPublicUrl(photo.storage_path).data.publicUrl;
                 return (
                   <Link href={`/photos/detail?id=${photo.id}`} key={photo.id} className="snap-start shrink-0">
                     <img 

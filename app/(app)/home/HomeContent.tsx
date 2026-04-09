@@ -41,14 +41,12 @@ export default function HomeContent({ initialData, userId }: HomeContentProps) {
         { data: myProfile },
         { data: partnerData },
         { data: nextEvents },
-        { data: recentPhotos },
-        { data: todaysDiaries }
+        { data: recentPhotos }
       ] = await Promise.all([
         supabase.from("users").select("*").eq("id", userId).single(),
         supabase.from("couples").select("user1_id, user2_id").eq("id", couple.id).single(),
         supabase.from("events").select("*").eq("couple_id", couple.id).gte("date", todayStr).order("date", { ascending: true }).limit(1),
-        supabase.from("photos").select("*").eq("couple_id", couple.id).order("taken_at", { ascending: false }).limit(3),
-        supabase.from("diaries").select("author_id").eq("couple_id", couple.id).eq("diary_date", todayStr)
+        supabase.from("photos").select("*").eq("couple_id", couple.id).order("taken_at", { ascending: false }).limit(3)
       ]);
 
       const partnerId = partnerData?.user1_id === userId ? partnerData?.user2_id : partnerData?.user1_id;
@@ -63,8 +61,7 @@ export default function HomeContent({ initialData, userId }: HomeContentProps) {
         myProfile,
         partnerProfile,
         nextEvent: nextEvents?.[0],
-        recentPhotos,
-        todaysDiaries
+        recentPhotos
       };
     },
     initialData,
@@ -73,9 +70,7 @@ export default function HomeContent({ initialData, userId }: HomeContentProps) {
 
   if (!homeData || !homeData.couple) return null;
 
-  const { couple, myProfile, partnerProfile, nextEvent, recentPhotos, todaysDiaries } = homeData;
-  const myDiary = todaysDiaries?.some((d: any) => d.author_id === userId);
-  const partnerDiary = todaysDiaries?.some((d: any) => d.author_id === partnerProfile?.id);
+  const { couple, myProfile, partnerProfile, nextEvent, recentPhotos } = homeData;
 
   const firstMetDday = calcDday(couple.first_met_date);
   const weddingDday = calcDday(couple.wedding_date);
@@ -148,20 +143,6 @@ export default function HomeContent({ initialData, userId }: HomeContentProps) {
           </div>
         </section>
 
-        {/* 섹션: 오늘의 다이어리 */}
-        <section>
-          <h3 className="text-[17px] font-bold text-text mb-4">오늘의 다이어리</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <Link href="/diary" className={`p-5 rounded-2xl border transition-all active:scale-95 flex flex-col items-center gap-2 ${myDiary ? 'bg-primary/5 border-primary/20' : 'bg-[#F9FAFB] border-border/40'}`}>
-              <span className="text-[13px] font-bold text-muted">{myProfile?.nickname || "나"}</span>
-              <span className={`text-[15px] font-bold ${myDiary ? 'text-primary' : 'text-text'}`}>{myDiary ? '작성 완료 ✅' : '지금 쓰기 ✍️'}</span>
-            </Link>
-            <div className={`p-5 rounded-2xl border flex flex-col items-center gap-2 ${partnerDiary ? 'bg-primary/5 border-primary/20' : 'bg-[#F9FAFB] border-border/40'}`}>
-              <span className="text-[13px] font-bold text-muted">{partnerProfile?.nickname || "파트너"}</span>
-              <span className="text-[15px] font-bold text-text">{partnerDiary ? '작성 완료 ✅' : '대기 중 💭'}</span>
-            </div>
-          </div>
-        </section>
       </div>
     </div>
   );
