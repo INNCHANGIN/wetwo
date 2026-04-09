@@ -1,52 +1,39 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
+import { useAuth } from "@/components/providers/AuthProvider";
 import { Plus, ChevronRight, Beer } from "lucide-react";
 import Link from "next/link";
 
 export default function BrewingPage() {
   const router = useRouter();
+  const { user, couple, loading: authLoading } = useAuth();
   const supabase = createClient();
-  const [loading, setLoading] = useState(true);
-  const [logs, setLogs] = useState<any[]>([]);
 
-  useEffect(() => {
-    async function fetchLogs() {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+  const { data: logs, isLoading: dataLoading } = useQuery({
+    queryKey: ["brewing-logs", couple?.id],
+    queryFn: async () => {
+      if (!couple) return [];
+      const { data } = await supabase
+        .from("brewing_logs")
+        .select("*")
+        .eq("couple_id", couple.id)
+        .order("created_at", { ascending: false });
+      return data || [];
+    },
+    enabled: !!couple,
+    staleTime: 1000 * 60 * 5,
+  });
 
-        const { data: couple } = await supabase
-          .from("couples")
-          .select("id")
-          .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
-          .single();
-
-        if (!couple) return;
-
-        const { data: logData } = await supabase
-          .from("brewing_logs")
-          .select("*")
-          .eq("couple_id", couple.id)
-          .order("created_at", { ascending: false });
-
-        setLogs(logData || []);
-      } catch (error) {
-        console.error("Error fetching brewing logs:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchLogs();
-  }, [supabase]);
+  const loading = authLoading || (dataLoading && !logs);
 
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen bg-gray-50/50 p-6">
         <div className="animate-pulse space-y-4">
+          <div className="h-24 bg-gray-200 rounded-2xl w-full"></div>
           <div className="h-24 bg-gray-200 rounded-2xl w-full"></div>
           <div className="h-24 bg-gray-200 rounded-2xl w-full"></div>
         </div>
@@ -59,7 +46,7 @@ export default function BrewingPage() {
       <div className="px-6 pt-6 pb-4">
         <h2 className="text-[24px] font-bold text-gray-900 mb-6">브루잉 일지</h2>
         
-        {logs.length === 0 ? (
+        {!logs || logs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
               <Beer className="text-orange-500" size={32} />
@@ -68,7 +55,7 @@ export default function BrewingPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            {logs.map((log) => (
+            {logs.map((log: any) => (
               <Link 
                 key={log.id} 
                 href={`/brewing/detail?id=${log.id}`}

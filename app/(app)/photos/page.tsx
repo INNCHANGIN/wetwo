@@ -1,52 +1,36 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase";
-import { getCurrentCouple } from "@/lib/queries";
+import { useAuth } from "@/components/providers/AuthProvider";
 import PhotosContent from "./PhotosContent";
 
 export default function PhotosPage() {
-  const router = useRouter();
+  const { user, couple, loading: authLoading } = useAuth();
   const supabase = createClient();
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<{ photos: any[], count: number, coupleId: string } | null>(null);
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          router.push("/login");
-          return;
-        }
+  const { data, isLoading: dataLoading } = useQuery({
+    queryKey: ["photos", couple?.id],
+    queryFn: async () => {
+      if (!couple) return null;
 
-        const couple = await getCurrentCouple(supabase, user.id);
-        if (!couple) {
-          router.push("/connect");
-          return;
-        }
+      const { data: photos, count } = await supabase
+        .from("photos")
+        .select("*", { count: "exact" })
+        .eq("couple_id", couple.id)
+        .order("taken_at", { ascending: false });
 
-        const { data: photos, count } = await supabase
-          .from("photos")
-          .select("*", { count: "exact" })
-          .eq("couple_id", couple.id)
-          .order("taken_at", { ascending: false });
+      return {
+        photos: photos || [],
+        count: count || 0,
+        coupleId: couple.id
+      };
+    },
+    enabled: !!couple,
+    staleTime: 1000 * 60 * 10, // 10분간 캐시
+  });
 
-        setData({
-          photos: photos || [],
-          count: count || 0,
-          coupleId: couple.id
-        });
-      } catch (error) {
-        console.error("Error loading photos data:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadData();
-  }, [supabase, router]);
+  const loading = authLoading || (dataLoading && !data);
 
   if (loading) {
     return (
@@ -57,7 +41,7 @@ export default function PhotosPage() {
         </div>
         <div className="grid grid-cols-3 gap-[2px]">
           {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="aspect-square bg-gray-100 animate-pulse" />
+            <div key={i} className="aspect-square bg-gray-50 animate-pulse" />
           ))}
         </div>
       </div>

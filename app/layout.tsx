@@ -3,6 +3,7 @@ import './globals.css';
 import InstallBanner from '@/components/ui/InstallBanner';
 import QueryProvider from '@/components/providers/QueryProvider';
 import { ToastProvider } from '@/components/ui/Toast';
+import { AuthProvider } from '@/components/providers/AuthProvider';
 
 export const metadata: Metadata = {
   title: 'We Two - Couple App',
@@ -52,12 +53,14 @@ export default function RootLayout({
     <html lang="ko">
       <body className="bg-surface text-text antialiased">
         <QueryProvider>
-          <ToastProvider>
-            <main className="min-h-screen bg-white shadow-sm flex flex-col relative w-full h-full max-w-[390px] mx-auto overflow-hidden">
-              {children}
-              {/* <InstallBanner /> */}
-            </main>
-          </ToastProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <main className="min-h-screen bg-white shadow-sm flex flex-col relative w-full h-full max-w-[390px] mx-auto overflow-hidden">
+                {children}
+                {/* <InstallBanner /> */}
+              </main>
+            </ToastProvider>
+          </AuthProvider>
         </QueryProvider>
         <SWRegistration />
       </body>

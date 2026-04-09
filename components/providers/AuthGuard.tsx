@@ -1,53 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { createClient } from "@/lib/supabase";
+import { useAuth } from "./AuthProvider";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const supabase = createClient();
-  const [loading, setLoading] = useState(true);
+  const { user, couple, loading } = useAuth();
 
   useEffect(() => {
-    async function checkAuth() {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          // 공개 경로는 허용 (이미 RootLayout에서 분기되지만 안전장치)
-          if (pathname === '/login' || pathname === '/signup' || pathname === '/') {
-            setLoading(false);
-            return;
-          }
-          router.replace("/login");
-          return;
-        }
+    if (loading) return;
 
-        // 커플 연결 상태 체크 (APK 환경에서 미들웨어를 대신함)
-        const { data: couple } = await supabase
-          .from("couples")
-          .select("id")
-          .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
-          .limit(1)
-          .single();
-
-        if (!couple && pathname !== '/connect') {
-          router.replace("/connect");
-        } else if (couple && pathname === '/connect') {
-          router.replace("/home");
-        } else {
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error("AuthGuard Error:", error);
-        router.replace("/login");
+    if (!user) {
+      if (pathname === '/login' || pathname === '/signup' || pathname === '/') {
+        return;
       }
+      router.replace("/login");
+      return;
     }
 
-    checkAuth();
-  }, [supabase, router, pathname]);
+    if (!couple && pathname !== '/connect') {
+      router.replace("/connect");
+    } else if (couple && pathname === '/connect') {
+      router.replace("/home");
+    }
+  }, [user, couple, loading, router, pathname]);
 
   if (loading) {
     return (
